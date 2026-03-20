@@ -1,7 +1,11 @@
-import { AfterViewInit, Component } from '@angular/core';
+import { AfterViewInit, Component, DestroyRef, inject } from '@angular/core';
 import mapboxgl from 'mapbox-gl';
 import { environment } from '../../../../../environments/environments';
 import { TripsList } from '../../../trips/components/trips-list/trips-list';
+import { TripState } from '../../../trips/services/trip-state';
+import { Country } from '../../../trips/models/country.model';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { Trip } from '../../../trips/models/trip.model';
 
 @Component({
   selector: 'app-display-map',
@@ -10,9 +14,11 @@ import { TripsList } from '../../../trips/components/trips-list/trips-list';
   styleUrl: './display-map.scss',
 })
 export class DisplayMap implements AfterViewInit {
+  private readonly tripState = inject(TripState);
+  private readonly destroyRef = inject(DestroyRef);
 
   private map?: mapboxgl.Map;
-  private readonly highlighted: string[] = ['AUS', 'NZL', 'USA'];
+  private highlighted: string[] = [];
 
   ngAfterViewInit(): void {
     mapboxgl.accessToken = environment.mapboxToken;
@@ -27,7 +33,41 @@ export class DisplayMap implements AfterViewInit {
     this.map.addControl(new mapboxgl.NavigationControl());
     this.map.on('load', () => {
       this.addCountryHighlightLayers();
+      
+      this.tripState.selectedTrip$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(trip => {
+        if (trip) {
+          this.updateHighlightedCountries(trip);
+        }
+      });
     });
+  }
+
+  private updateHighlightedCountries(trip: Trip): void {
+    const countryCodes = trip.countriesVisited.map((c: Country) => c.countryCode);
+    this.highlighted = countryCodes;
+    
+    if (this.map) {
+      this.map.setFilter('countries-highlight-fill', [
+        'in',
+        ['get', 'iso_3166_1'],
+        ['literal', this.highlighted],
+      ]);
+      this.map.setFilter('countries-highlight-outline', [
+        'in',
+        ['get', 'iso_3166_1'],
+        ['literal', this.highlighted],
+      ]);
+
+      if (trip.countriesVisited.length > 0) {
+        const firstCountry = trip.countriesVisited[0];
+        this.map.flyTo({
+          center: [firstCountry.coordinates.longitude, firstCountry.coordinates.latitude],
+          zoom: 2,
+          duration: 1500,
+          essential: true
+        });
+      }
+    }
   }
 
   private addCountryHighlightLayers(): void {
@@ -46,7 +86,7 @@ export class DisplayMap implements AfterViewInit {
       'source-layer': 'country_boundaries',
       filter: [
         'in',
-        ['get', 'iso_3166_1_alpha_3'],
+        ['get', 'iso_3166_1'],
         ['literal', this.highlighted],
       ],
       paint: {
@@ -55,7 +95,6 @@ export class DisplayMap implements AfterViewInit {
       },
     });
 
-    // Optional outline
     this.map.addLayer({
       id: 'countries-highlight-outline',
       type: 'line',
@@ -63,7 +102,7 @@ export class DisplayMap implements AfterViewInit {
       'source-layer': 'country_boundaries',
       filter: [
         'in',
-        ['get', 'iso_3166_1_alpha_3'],
+        ['get', 'iso_3166_1'],
         ['literal', this.highlighted],
       ],
       paint: {

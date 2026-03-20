@@ -1,23 +1,44 @@
-@if(trips()) {
+@if(trips().length > 0) {
 
 <div class="trips-list-container">
     <div class="trips-header">
         <h2>My Trips</h2>
-        <span class="trip-count">{{ trips().length }}</span>
+        <span class="trip-count">{{ currentIndex() + 1 }} / {{ trips().length }}</span>
     </div>
 
-    <div class="trips-cards">
-        @for (trip of trips(); track trip.id) {
+    <div class="carousel-content">
+        @if (currentTrip) {
             <app-display-trip 
-                [trip]="trip"
+                [trip]="currentTrip"
                 (onTripSelected)="selectTrip($event)"
             ></app-display-trip>
-        } @empty {
-        <div class="empty-state">
-            <p>No trips yet. Start planning your next adventure!</p>
-        </div>
         }
+    </div>
+
+    <div class="carousel-navigation">
+        <button 
+            class="nav-button prev" 
+            (click)="previousTrip()"
+            aria-label="Previous trip">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="15 18 9 12 15 6"></polyline>
+            </svg>
+        </button>
+        <button 
+            class="nav-button next" 
+            (click)="nextTrip()"
+            aria-label="Next trip">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="9 18 15 12 9 6"></polyline>
+            </svg>
+        </button>
     </div>
 </div>
 
+} @else {
+<div class="trips-list-container">
+    <div class="empty-state">
+        <p>No trips yet. Start planning your next adventure!</p>
+    </div>
+</div>
 }

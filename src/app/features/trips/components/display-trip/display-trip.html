@@ -1,8 +1,8 @@
-<div class="trip-card">
+<div class="trip-card" (click)="selectTrip(trip)">
     @if (trip.coverImageUrl) {
     <div class="trip-card-image" [style.background-image]="'url(' + trip.coverImageUrl + ')'"></div>
     }
-    <div class="trip-card-content" (click)="selectTrip(trip)">
+    <div class="trip-card-content">
         <h3 class="trip-title">{{ trip.title }}</h3>
         <p class="trip-description">{{ trip.description }}</p>
         <div class="trip-meta">
