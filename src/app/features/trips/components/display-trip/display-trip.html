@@ -1,1 +1,27 @@
-<p>display-trip works!</p>
+<div class="trip-card">
+    @if (trip.coverImageUrl) {
+    <div class="trip-card-image" [style.background-image]="'url(' + trip.coverImageUrl + ')'"></div>
+    }
+    <div class="trip-card-content" (click)="selectTrip(trip)">
+        <h3 class="trip-title">{{ trip.title }}</h3>
+        <p class="trip-description">{{ trip.description }}</p>
+        <div class="trip-meta">
+            <span class="trip-dates">
+                {{ trip.startDate | date: 'MMM yyyy' }} - {{ trip.endDate | date: 'MMM yyyy' }}
+            </span>
+            @if (trip.countriesVisited.length > 0) {
+            <span class="trip-countries">
+                {{ trip.countriesVisited.length }} {{ trip.countriesVisited.length === 1 ? 'country' :
+                'countries' }}
+            </span>
+            }
+        </div>
+        @if (trip.tags.length > 0) {
+        <div class="trip-tags">
+            @for (tag of trip.tags; track tag) {
+            <span class="trip-tag">{{ tag }}</span>
+            }
+        </div>
+        }
+    </div>
+</div>

@@ -1,1 +1,23 @@
-<p>trips-list works!</p>
+@if(trips()) {
+
+<div class="trips-list-container">
+    <div class="trips-header">
+        <h2>My Trips</h2>
+        <span class="trip-count">{{ trips().length }}</span>
+    </div>
+
+    <div class="trips-cards">
+        @for (trip of trips(); track trip.id) {
+            <app-display-trip 
+                [trip]="trip"
+                (onTripSelected)="selectTrip($event)"
+            ></app-display-trip>
+        } @empty {
+        <div class="empty-state">
+            <p>No trips yet. Start planning your next adventure!</p>
+        </div>
+        }
+    </div>
+</div>
+
+}
