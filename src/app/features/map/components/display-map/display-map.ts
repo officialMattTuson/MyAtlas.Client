@@ -1,6 +1,6 @@
 import { AfterViewInit, Component } from '@angular/core';
 import mapboxgl from 'mapbox-gl';
-import { environment } from '../../../../environments/environments';
+import { environment } from '../../../../../environments/environments';
 
 @Component({
   selector: 'app-display-map',

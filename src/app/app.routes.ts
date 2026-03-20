@@ -9,7 +9,7 @@ export const routes: Routes = [
     {
         path: "map",
         loadComponent: () =>
-            import('./map/components/display-map/display-map')
+            import('./features/map/components/display-map/display-map')
                 .then((m => m.DisplayMap))
     }
 ];
