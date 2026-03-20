@@ -1,10 +1,11 @@
 import { AfterViewInit, Component } from '@angular/core';
 import mapboxgl from 'mapbox-gl';
 import { environment } from '../../../../../environments/environments';
+import { TripsList } from '../../../trips/components/trips-list/trips-list';
 
 @Component({
   selector: 'app-display-map',
-  imports: [],
+  imports: [TripsList],
   templateUrl: './display-map.html',
   styleUrl: './display-map.scss',
 })
