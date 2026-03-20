@@ -1,0 +1,22 @@
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+
+import { TripsList } from './trips-list';
+
+describe('TripsList', () => {
+  let component: TripsList;
+  let fixture: ComponentFixture<TripsList>;
+
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      imports: [TripsList],
+    }).compileComponents();
+
+    fixture = TestBed.createComponent(TripsList);
+    component = fixture.componentInstance;
+    await fixture.whenStable();
+  });
+
+  it('should create', () => {
+    expect(component).toBeTruthy();
+  });
+});
