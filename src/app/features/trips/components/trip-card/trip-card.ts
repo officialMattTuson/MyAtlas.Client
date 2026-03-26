@@ -3,12 +3,12 @@ import { Trip } from '../../models/trip.model';
 import { DatePipe } from '@angular/common';
 
 @Component({
-  selector: 'app-display-trip',
+  selector: 'app-trip-card',
   imports: [DatePipe],
-  templateUrl: './display-trip.html',
-  styleUrl: './display-trip.scss',
+  templateUrl: './trip-card.html',
+  styleUrl: './trip-card.scss',
 })
-export class DisplayTrip {
+export class TripCard {
 
   @Input() trip!: Trip;
   @Output() onTripSelected = new EventEmitter<Trip>();

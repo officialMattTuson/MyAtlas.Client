@@ -7,7 +7,7 @@
         <p class="trip-description">{{ trip.description }}</p>
         <div class="trip-meta">
             <span class="trip-dates">
-                {{ trip.startDate | date: 'MMM yyyy' }} - {{ trip.endDate | date: 'MMM yyyy' }}
+                {{ trip.startDate | date: 'MMM dd yyyy' }} - {{ trip.endDate | date: 'MMM dd yyyy' }}
             </span>
             @if (trip.countriesVisited.length > 0) {
             <span class="trip-countries">

@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { DisplayTrip } from './display-trip';
+import { DisplayTrip } from './trip-card';
 
 describe('DisplayTrip', () => {
   let component: DisplayTrip;

@@ -8,10 +8,10 @@
 
     <div class="carousel-content">
         @if (currentTrip) {
-            <app-display-trip 
+            <app-trip-card 
                 [trip]="currentTrip"
                 (onTripSelected)="selectTrip($event)"
-            ></app-display-trip>
+            ></app-trip-card>
         }
     </div>
 

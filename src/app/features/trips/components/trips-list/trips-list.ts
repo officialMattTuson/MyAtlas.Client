@@ -1,22 +1,24 @@
-import { Component, effect, inject, OnInit, signal } from '@angular/core';
+import { Component, DestroyRef, effect, inject, OnInit, signal } from '@angular/core';
 import { Trip } from '../../models/trip.model';
-import { DisplayTrip } from '../display-trip/display-trip';
+import { TripCard } from '../trip-card/trip-card';
 import { TripState } from '../../services/trip-state';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'app-trips-list',
-  imports: [DisplayTrip],
+  imports: [TripCard],
   templateUrl: './trips-list.html',
   styleUrl: './trips-list.scss',
 })
 export class TripsList implements OnInit {
   private readonly tripState = inject(TripState);
+  private readonly destroyRef = inject(DestroyRef);
 
   trips = signal<Trip[]>([]);
   currentIndex = signal<number>(0);
 
   constructor() {
-    // Auto-select trip when currentIndex changes
     effect(() => {
       const index = this.currentIndex();
       const trips = this.trips();
@@ -27,13 +29,14 @@ export class TripsList implements OnInit {
   }
 
   ngOnInit(): void {
-    this.tripState.getTrips().subscribe({
+    this.tripState.getTrips().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (trips) => {
         this.trips.set(trips);
         if (trips.length > 0) {
           this.currentIndex.set(0);
         }
-      }
+      },
+      error: ((error: HttpErrorResponse) => console.error(error))
     });
   }
 
