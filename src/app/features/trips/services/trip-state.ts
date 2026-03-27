@@ -17,6 +17,10 @@ export class TripState {
     return this.tripApiService.getAllTrips();
   }
 
+  public getTripById(tripId: string): Observable<Trip> {
+    return this.tripApiService.getTripById(tripId);
+  }
+
   public setSelectedTrip(trip: Trip): void {
     this._selectedTrip.next(trip);
   }

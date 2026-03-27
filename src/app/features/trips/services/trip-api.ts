@@ -13,4 +13,8 @@ export class TripApi {
   public getAllTrips(): Observable<Trip[]> {
     return this.httpClient.get<Trip[]>(`${this.baseUrl}/trips`);
   }
+
+  public getTripById(tripId: string): Observable<Trip> {
+    return this.httpClient.get<Trip>(`${this.baseUrl}/trips/${tripId}`)
+  }
 }
