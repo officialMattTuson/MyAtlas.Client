@@ -21,7 +21,7 @@ export class TripState {
     return this.tripApiService.getTripById(tripId);
   }
 
-  public setSelectedTrip(trip: Trip): void {
+  public setSelectedTrip(trip: Trip | null): void {
     this._selectedTrip.next(trip);
   }
 

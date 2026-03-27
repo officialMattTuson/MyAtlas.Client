@@ -4,7 +4,8 @@ import { TripCard } from '../trip-card/trip-card';
 import { TripState } from '../../services/trip-state';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { HttpErrorResponse } from '@angular/common/http';
-import { Router } from '@angular/router';
+import { Location } from '@angular/common';
+import { DisplayMap } from '../../../map/components/display-map/display-map';
 
 @Component({
   selector: 'app-trips-list',
@@ -14,8 +15,9 @@ import { Router } from '@angular/router';
 })
 export class TripsList implements OnInit {
   private readonly tripState = inject(TripState);
-  private readonly router = inject(Router);
+  private readonly location = inject(Location);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly displayMap = inject(DisplayMap);
 
   trips = signal<Trip[]>([]);
   currentIndex = signal<number>(0);
@@ -60,7 +62,8 @@ export class TripsList implements OnInit {
 
   selectTrip(trip: Trip): void {
     this.tripState.setSelectedTrip(trip);
-    this.router.navigateByUrl(`trip/${trip.id}`);
+    this.location.replaceState(`map/trip/${trip.id}`);
+    this.displayMap.showTripDetails(trip.id);
   }
 
   get currentTrip(): Trip | null {

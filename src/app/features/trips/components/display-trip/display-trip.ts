@@ -1,78 +1,71 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, DestroyRef, inject, OnInit, signal } from '@angular/core';
 import { TripState } from '../../services/trip-state';
 import { Trip } from '../../models/trip.model';
-import { ActivatedRoute, Router } from '@angular/router';
-import { Observable, switchMap, take, tap } from 'rxjs';
+import { Observable, take } from 'rxjs';
 import { HttpErrorResponse } from '@angular/common/http';
 import { MemoryState } from '../../../memories/services/memory-state';
 import { Memory } from '../../../memories/models/memory-model';
+import { DatePipe, Location } from '@angular/common';
+import { DisplayMap } from '../../../map/components/display-map/display-map';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-display-trip',
-  imports: [],
+  imports: [DatePipe],
   templateUrl: './display-trip.html',
   styleUrl: './display-trip.scss',
 })
 export class DisplayTrip implements OnInit {
   private readonly tripStateService = inject(TripState);
   private readonly memoryStateService = inject(MemoryState);
-  private readonly activatedRoute = inject(ActivatedRoute);
-  private readonly router = inject(Router);
+  private readonly destroyRef = inject(DestroyRef);
+  readonly location = inject(Location);
+  private readonly displayMap = inject(DisplayMap);
 
   tripData = signal<{ loading: boolean; trip?: Trip; memories?: Memory[] }>({
     loading: true
   });
 
   ngOnInit(): void {
-    const tripId = this.getIdInRoute();
-    this.getTrip(tripId);
-
+    this.tripStateService.selectedTrip$
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(trip => {
+        if (trip) {
+          this.loadTripData(trip);
+        }
+      });
   }
 
-  getTrip(tripId: string): void {
-    const trip = this.tripStateService.getSelectedTrip();
-    if (trip && trip.id === tripId) {
-      this.tripData.set({ loading: false, trip: trip });
-      return;
-    }
-    this.getTripById(tripId);
-  }
-
-  getTripById(tripId: string): void {
-    this.tripStateService.getTripById(tripId)
-      .pipe(
-        take(1),
-        tap(trip => this.tripData.set({ loading: false, trip: trip })),
-        switchMap((result: Trip) => {
-          return this.getMemoriesByTripId(result.id)
-        }))
+  loadTripData(trip: Trip): void {
+    this.setTripData(false, trip);
+    
+    this.getMemoriesByTripId(trip.id)
       .subscribe({
-        next: (result) => {
-          const trip = this.tripData().trip;
-          this.tripData.set({
-            loading: false,
-            trip: trip,
-            memories: result
-          });
-          console.log(this.tripData())
+        next: (memories) => {
+          this.setTripData(false, trip, memories);
         },
         error: (error: HttpErrorResponse) => {
-          console.error(error)
-          this.tripData.set({ loading: false });
+          console.error('Failed to load memories:', error);
+          this.setTripData(false, trip, []);
         }
-      })
-  }
-
-  getIdInRoute(): string {
-    const id = this.activatedRoute.snapshot.params['tripId'];
-    if (!id) {
-      this.router.navigateByUrl("map");
-      return '';
-    }
-    return id;
+      });
   }
 
   getMemoriesByTripId(tripId: string): Observable<Memory[]> {
     return this.memoryStateService.getMemoriesByTripId(tripId).pipe(take(1));
+  }
+
+  setTripData(loading: boolean, trip?: Trip, memories?: Memory[]): void {
+    this.tripData.set({
+      loading: loading,
+      trip: trip,
+      memories: memories
+    })
+  }
+
+  goBack(): void {
+    this.tripStateService.setSelectedTrip(null);
+    this.location.replaceState('/map');
+    this.displayMap.showTripsList();
   }
 }

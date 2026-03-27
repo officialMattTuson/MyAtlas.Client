@@ -1,2 +1,7 @@
 <div class="map-container" id="map"></div>
-<app-trips-list></app-trips-list>
+
+@if (tripId()) {
+  <app-display-trip></app-display-trip>
+} @else {
+  <app-trips-list></app-trips-list>
+}

@@ -13,9 +13,9 @@ export const routes: Routes = [
                 .then((m => m.DisplayMap))
     },
     {
-        path: "trip/:tripId",
+        path: "map/trip/:tripId",
         loadComponent: () =>
-            import('./features/trips/components/display-trip/display-trip')
-                .then((m => m.DisplayTrip))
+            import('./features/map/components/display-map/display-map')
+                .then((m => m.DisplayMap))
     },
 ];

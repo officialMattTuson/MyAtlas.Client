@@ -1,1 +1,83 @@
-<p>display-trip works!</p>
+@if (tripData().loading) {
+  <div class="trip-detail-container">
+    <div class="trip-header">
+      <h2>Loading...</h2>
+    </div>
+  </div>
+} @else if (tripData().trip) {
+  <div class="trip-detail-container">
+    <!-- Fixed Header -->
+    <div class="trip-header">
+      <button class="back-button" (click)="goBack()" aria-label="Back to trips">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="15 18 9 12 15 6"></polyline>
+        </svg>
+      </button>
+      <h2>{{ tripData().trip!.title }}</h2>
+    </div>
+
+    <!-- Scrollable Content -->
+    <div class="trip-content">
+      <!-- Trip Details Section -->
+      <div class="trip-info-section">
+        <p class="trip-description">{{ tripData().trip!.description }}</p>
+        
+        <div class="trip-meta">
+          <div class="meta-item">
+            <span class="meta-label">Dates</span>
+            <span class="meta-value">
+              {{ tripData().trip!.startDate | date:'mediumDate' }} - 
+              {{ tripData().trip!.endDate | date:'mediumDate' }}
+            </span>
+          </div>
+          
+          @if (tripData().trip?.countriesVisited?.length ?? 0 > 0) {
+            <div class="meta-item">
+              <span class="meta-label">Countries</span>
+              <span class="meta-value">
+                {{ tripData().trip!.countriesVisited!.length }}
+              </span>
+            </div>
+          }
+          
+          @if (tripData().trip?.tags?.length ?? 0 > 0) {
+            <div class="meta-item tags">
+              <span class="meta-label">Tags</span>
+              <div class="tag-list">
+                @for (tag of tripData().trip!.tags; track tag) {
+                  <span class="tag">{{ tag }}</span>
+                }
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+
+      <!-- Memories Section -->
+      <div class="memories-section">
+        <h3 class="section-title">
+          Memories 
+          @if (tripData().memories && tripData().memories!.length > 0) {
+            <span class="memory-count">{{ tripData().memories!.length }}</span>
+          }
+        </h3>
+        
+        @if (tripData().memories && tripData().memories!.length > 0) {
+          <div class="memory-list">
+            @for (memory of tripData().memories; track memory.id) {
+              <div class="memory-card">
+                <h4 class="memory-title">{{ memory.title }}</h4>
+                @if (memory.description) {
+                  <p class="memory-description">{{ memory.description }}</p>
+                }
+                <span class="memory-date">{{ memory.occurredAt | date:'mediumDate' }}</span>
+              </div>
+            }
+          </div>
+        } @else {
+          <p class="empty-state">No memories yet for this trip</p>
+        }
+      </div>
+    </div>
+  </div>
+}
