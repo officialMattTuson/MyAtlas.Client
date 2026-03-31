@@ -14,6 +14,8 @@ export interface Memory {
     visibility: Visibility;
     place: PlaceMetaData;
     tags: string[];
+    longitude: number;
+    latitude: number;
     coverImageUrl?: string;
     coverImageBlobUrl?: string;
     coverImageBlobName?: string;

@@ -5,4 +5,6 @@ export interface PlaceMetaData {
     country?: string;
     countryCode?: string;
     formattedAddress?: string;
+    longitude: number;
+    latitude: number;
 }

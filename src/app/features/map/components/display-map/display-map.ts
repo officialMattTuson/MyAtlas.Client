@@ -10,6 +10,7 @@ import { DisplayTrip } from '../../../trips/components/display-trip/display-trip
 import { FlightPathService } from '../../services/flight-path';
 import { combineLatest } from 'rxjs';
 import { MapHighlight } from '../../services/map-highlight';
+import { MapMarker } from '../../services/map-marker';
 
 @Component({
   selector: 'app-display-map',
@@ -23,6 +24,7 @@ export class DisplayMap implements AfterViewInit {
   private readonly activatedRoute = inject(ActivatedRoute);
   private readonly flightPathService = inject(FlightPathService);
   private readonly mapHighlightService = inject(MapHighlight);
+  private readonly mapMarkerService = inject(MapMarker);
 
   tripId = signal<string | null>(null);
   private map?: mapboxgl.Map;
@@ -33,11 +35,11 @@ export class DisplayMap implements AfterViewInit {
 
   showTripDetails(tripId: string): void {
     this.tripId.set(tripId);
-    
     if (this.isAnimating) {
       this.pendingZoomToFour = true;
     } else {
       this.map?.flyTo({ zoom: 4, duration: 1000 });
+      this.map && this.mapMarkerService.addMarkerToMap(this.map);
     }
   }
 
@@ -65,6 +67,8 @@ export class DisplayMap implements AfterViewInit {
       this.tripState.selectedTrip$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(trip => {
         if (trip) {
           this.mapHighlightService.updateHighlightedCountries(trip, this.map);
+          if (this.map) {
+          }
           this.animateFlightPathsForTrip(trip);
         } else {
           if (this.map) {
@@ -86,8 +90,11 @@ export class DisplayMap implements AfterViewInit {
     }
 
     this.isAnimating = false;
-    this.pendingZoomToFour = false;
-    
+    // Set pending zoom for when loading from URL (when tripId signal is already set)
+    if (this.tripId()) {
+      this.pendingZoomToFour = true;
+    }
+
     this.map.stop();
     this.flightPathService.clearFlightPaths(this.map);
 
@@ -123,7 +130,7 @@ export class DisplayMap implements AfterViewInit {
           if (!this.map || this.currentTripId !== tripIdAtStart) return;
 
           this.isAnimating = true;
-          
+
           const outbound = {
             from: airports.departure,
             to: airports.arrival,
@@ -131,13 +138,14 @@ export class DisplayMap implements AfterViewInit {
 
           this.flightPathService.animateFlightForTrip(this.map, outbound, () => {
             this.isAnimating = false;
-            
+
             if (this.pendingZoomToFour && this.map) {
               this.map.flyTo({ zoom: 4, duration: 1000 });
+              this.mapMarkerService.addMarkerToMap(this.map);
               this.pendingZoomToFour = false;
             }
           });
-          
+
           this.lastAnimatedTripId = tripIdAtStart;
         });
       },

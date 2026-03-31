@@ -4,3 +4,14 @@
 body {
     margin: 0;
 }
+
+/* Memory popup styles */
+.memory-marker-popup .mapboxgl-popup-content {
+  padding: 15px;
+  max-width: 280px;
+  box-sizing: border-box;
+}
+
+.memory-marker-popup .mapboxgl-popup-tip {
+  border-top-color: #fff;
+}

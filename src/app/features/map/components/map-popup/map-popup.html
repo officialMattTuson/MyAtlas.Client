@@ -1,0 +1,23 @@
+<div class="memory-popup">
+    @if (memory().coverImageUrl) {
+    <div class="popup-image">
+        <img [src]="memory().coverImageUrl" [alt]="memory().title" />
+    </div>
+    }
+    <div class="popup-content">
+        <h3 class="popup-title">{{ memory().title }}</h3>
+        @if (memory().summary) {
+        <p class="popup-summary">{{ memory().summary }}</p>
+        }
+        <div class="popup-footer">
+            <span class="popup-date">{{ memory().occurredAt | date }}</span>
+        </div>
+        @if (memory().tags.length > 0) {
+        <div class="popup-tags">
+            @for (tag of memory().tags; track tag) {
+            <span class="tag">{{ tag }}</span>
+            }
+        </div>
+        }
+    </div>
+</div>
