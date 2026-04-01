@@ -65,7 +65,7 @@
         @if (tripData().memories && tripData().memories!.length > 0) {
           <div class="memory-list">
             @for (memory of tripData().memories; track memory.id) {
-              <div class="memory-card">
+              <div class="memory-card" (mouseenter)="onMemoryHover(memory)" (mouseleave)="onMemoryHover()">
                 <h4 class="memory-title">{{ memory.title }}</h4>
                 @if (memory.description) {
                   <p class="memory-description">{{ memory.description }}</p>

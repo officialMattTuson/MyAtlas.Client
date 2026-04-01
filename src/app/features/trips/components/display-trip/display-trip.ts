@@ -8,6 +8,8 @@ import { Memory } from '../../../memories/models/memory-model';
 import { DatePipe, Location } from '@angular/common';
 import { DisplayMap } from '../../../map/components/display-map/display-map';
 import { ActivatedRoute } from '@angular/router';
+import { MapMarker } from '../../../map/services/map-marker';
+import { Coordinates } from '../../../../core/models/coordinates.model';
 
 @Component({
   selector: 'app-display-trip',
@@ -18,6 +20,7 @@ import { ActivatedRoute } from '@angular/router';
 export class DisplayTrip implements OnInit {
   private readonly tripStateService = inject(TripState);
   private readonly memoryStateService = inject(MemoryState);
+  private readonly mapMarkerService = inject(MapMarker);
   readonly location = inject(Location);
   private readonly displayMap = inject(DisplayMap);
   private readonly activatedRoute = inject(ActivatedRoute);
@@ -70,6 +73,13 @@ export class DisplayTrip implements OnInit {
       trip: trip,
       memories: memories
     })
+  }
+
+  onMemoryHover(memory: Memory | null = null): void {
+    const coordinates: Coordinates | null = memory 
+      ? { latitude: memory.latitude, longitude: memory.longitude }
+      : null;
+    this.mapMarkerService.getMarkerByCoordinates(coordinates);
   }
 
   goBack(): void {

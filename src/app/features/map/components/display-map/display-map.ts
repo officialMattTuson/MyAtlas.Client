@@ -14,7 +14,7 @@ import { MapMarker } from '../../services/map-marker';
 
 @Component({
   selector: 'app-display-map',
-  imports: [TripsList, DisplayTrip],
+  imports: [TripsList, DisplayTrip], 
   templateUrl: './display-map.html',
   styleUrl: './display-map.scss',
 })
@@ -45,6 +45,7 @@ export class DisplayMap implements AfterViewInit {
 
   showTripsList(): void {
     this.tripId.set(null);
+    this.mapMarkerService.clearMapMarkers();
     this.pendingZoomToFour = false;
   }
 
@@ -67,8 +68,6 @@ export class DisplayMap implements AfterViewInit {
       this.tripState.selectedTrip$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(trip => {
         if (trip) {
           this.mapHighlightService.updateHighlightedCountries(trip, this.map);
-          if (this.map) {
-          }
           this.animateFlightPathsForTrip(trip);
         } else {
           if (this.map) {
@@ -90,7 +89,6 @@ export class DisplayMap implements AfterViewInit {
     }
 
     this.isAnimating = false;
-    // Set pending zoom for when loading from URL (when tripId signal is already set)
     if (this.tripId()) {
       this.pendingZoomToFour = true;
     }
